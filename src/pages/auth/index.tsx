@@ -10,7 +10,7 @@ import { useTelegram } from "@/context/TelegramContext"
 import { MessageCircle, Lock, Shield, Sparkles } from "lucide-react"
 
 export default function AuthPage() {
-  const { isAuthenticated, login, telegramApp } = useTelegram()
+  const { isAuthenticated, login } = useTelegram()
   const navigate = useNavigate()
 
   // Redirect if already authenticated

@@ -2,7 +2,6 @@
 
 import type React from "react";
 
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,11 +14,9 @@ import {
   Trophy,
   Lock,
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 
 export default function IeltsPage() {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const ieltsSkills = [
     {
@@ -51,11 +48,6 @@ export default function IeltsPage() {
       available: false,
     },
   ];
-
-  const handleSectionClick = (sectionId: string) => {
-    setActiveSection(sectionId);
-    // In a real app, you would navigate to the specific section page
-  };
 
   return (
     <div className="space-y-6">
