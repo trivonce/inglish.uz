@@ -10,6 +10,7 @@ import {
   Play,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useSpeakingTopics } from "@/features/speaking/hooks";
 
 // Define speaking topics with icons
 const speakingTopics = [
@@ -30,6 +31,10 @@ const speakingTopics = [
 const IeltsSpeaking = () => {
   const navigate = useNavigate();
 
+  const {data: topics, isLoading} = useSpeakingTopics()
+
+  console.log(topics)
+
   const handleSelectTopic = (topicId: string) => {
     navigate(`/ielts/speaking/${topicId}`);
   };
@@ -39,6 +44,8 @@ const IeltsSpeaking = () => {
     const randomTopic = speakingTopics[randomIndex];
     navigate(`/ielts/speaking/${randomTopic.id}`);
   };
+
+  console.log(topics)
 
   return (
     <div className="space-y-6">
@@ -64,27 +71,24 @@ const IeltsSpeaking = () => {
 
         <h1 className="font-medium text-lg mt-5 mb-2"> Topics</h1>
         <div className="flex flex-col gap-2">
-          {speakingTopics.map((topic) => (
-            <Link to={`/ielts/speaking/topic/${topic.id}`}>
+          {topics?.map((topic) => (
+            <Link to={`/ielts/speaking/topic/${topic._id}`}>
               <Card
-                key={topic.id}
+                key={topic._id}
                 className="hover:shadow-lg transition-all cursor-pointer overflow-hidden border-0 p-2 flex flex-row justify-between items-center"
-                onClick={() => handleSelectTopic(topic.id)}
               >
                 <div className={`flex items-center gap-3 `}>
-                  <div
+                  {/* <div
                     className={`bg-gradient-to-br ${topic.color} flex justify-center items-center text-white p-2 rounded-md`}
-                  >
-                    <div className="transform hover:scale-110 transition-transform duration-200">
-                      {topic.icon}
-                    </div>
-                  </div>
+                  > */}
+                      <img className="w-10 h-10 rounded-md" src={topic.icon} />
+                  {/* </div> */}
                   <div className="space-y-1">
-                    <h3 className="font-medium text-sm">{topic.title}</h3>
+                    <h3 className="font-medium text-sm line-clamp-1">{topic.title}</h3>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-slate-500">18 questions</p>
+                      <p className="text-xs text-slate-500">{topic.questionCount} questions</p>
                       <Separator className="!h-3" orientation="vertical" />
-                      <p className="text-xs text-slate-500">2000 users</p>
+                      <p className="text-xs text-slate-500">{topic.takenCount} users</p>
                     </div>
                   </div>
                 </div>
