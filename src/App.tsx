@@ -18,9 +18,11 @@ import AuthPage from "@/pages/auth";
 import HomePage from "@/pages/home";
 import IeltsSpeakingExam from "@/pages/ielts/speaking/exam";
 import IeltsSpeakingTopic from "./pages/ielts/speaking/[id]";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const App = () => {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const queryClient = new QueryClient()
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("hasVisited");
@@ -35,34 +37,39 @@ const App = () => {
   };
 
   return (
-    <TelegramProvider>
-      {isFirstVisit ? (
-        <Welcome onComplete={handleWelcomeComplete} />
-      ) : (
-        <Routes>
-          <Route path='/speaking/exam/:id' element={<IeltsSpeakingExam />} />
+    <QueryClientProvider client={queryClient}>
+      <TelegramProvider>
+        {isFirstVisit ? (
+          <Welcome onComplete={handleWelcomeComplete} />
+        ) : (
+          <Routes>
+            <Route path="/speaking/exam/:id" element={<IeltsSpeakingExam />} />
 
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="games" element={<Games />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="games" element={<Games />} />
 
-            <Route path="ielts" element={<IeltsLayout />}>
-              <Route index element={<IeltsPage />} />
-              <Route path="speaking" element={<IeltsSpeaking />} />
-              <Route path="speaking/topic/:id" element={<IeltsSpeakingTopic />} />
-              <Route path="writing" element={<IeltsWriting />} />
-              <Route path="reading" element={<IeltsReading />} />
-              <Route path="listening" element={<IeltsListening />} />
+              <Route path="ielts" element={<IeltsLayout />}>
+                <Route index element={<IeltsPage />} />
+                <Route path="speaking" element={<IeltsSpeaking />} />
+                <Route
+                  path="speaking/topic/:id"
+                  element={<IeltsSpeakingTopic />}
+                />
+                <Route path="writing" element={<IeltsWriting />} />
+                <Route path="reading" element={<IeltsReading />} />
+                <Route path="listening" element={<IeltsListening />} />
+              </Route>
+
+              <Route path="profile" element={<Profile />} />
+              <Route path="auth" element={<AuthPage />} />
+
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
-
-            <Route path="profile" element={<Profile />} />
-            <Route path="auth" element={<AuthPage />} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
-      )}
-    </TelegramProvider>
+          </Routes>
+        )}
+      </TelegramProvider>
+    </QueryClientProvider>
   );
 };
 
