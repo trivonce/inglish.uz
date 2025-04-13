@@ -70,7 +70,7 @@ if (true) {
   return (
     <QueryClientProvider  client={queryClient}>
       <TelegramProvider>
-        {JSON.stringify(user)}
+        {JSON.stringify(window?.Telegram?.WebApp.initDataUnsafe)}
         {isFirstVisit ? (
           <Welcome onComplete={handleWelcomeComplete} />
         ) : (
