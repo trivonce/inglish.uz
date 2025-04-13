@@ -8,7 +8,7 @@ import Profile from "@/pages/Profile";
 import { TelegramProvider } from "@/context/TelegramContext";
 
 // pages
-import IeltsLayout from "./components/layout/IeltsLayout.tsx";
+import IeltsLayout from "@/components/layout/IeltsLayout";
 import IeltsSpeaking from "@/pages/ielts/speaking";
 import IeltsWriting from "@/pages/ielts/writing";
 import IeltsReading from "@/pages/ielts/reading";
