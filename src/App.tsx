@@ -41,6 +41,7 @@ const App = () => {
 
 useEffect(() => {
   const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  console.log(tgUser)
 
   // // fallback mock for dev
   // const mockUser = {
@@ -55,7 +56,6 @@ useEffect(() => {
 
   if (tgUser) {
     setUser(tgUser);
-    alert(tgUser)
   } else {
     console.warn("⚠️ No Telegram user found.");
   }
@@ -66,7 +66,6 @@ if (true) {
     eruda.default.init();
   });
 }
-
 
   return (
     <QueryClientProvider  client={queryClient}>
