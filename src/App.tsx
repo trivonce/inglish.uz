@@ -61,6 +61,12 @@ useEffect(() => {
   }
 }, []);
 
+if (true) {
+  import("eruda").then((eruda) => {
+    eruda.default.init();
+  });
+}
+
 
   return (
     <QueryClientProvider  client={queryClient}>
