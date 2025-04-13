@@ -5,6 +5,7 @@ import { usePersistentRecorder } from "@/hooks/usePersistentRecorder";
 import { useExamStart } from "@/hooks/useExamStart";
 import ReadyPrompt from "@/components/ReadyPrompt";
 import { showAlert } from "@/lib/alert";
+import { useSubmitSpeakingAnswers } from "@/features/speaking/hooks";
 
 // components
 import TopBar from "./components/TopBar";
@@ -15,6 +16,7 @@ import SubmitLoadingScreen from "./components/SubmitLoadingScreen";
 export default function IeltsSpeakingExam() {
   const { id } = useParams<{ id: string }>();
   const { data: topic } = useSpeakingTopic(id!);
+  const submitMutation = useSubmitSpeakingAnswers(id!);
 
   const [currentPart, setCurrentPart] = useState<"part1" | "part2" | "part3">("part1");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,7 +40,7 @@ export default function IeltsSpeakingExam() {
 
   useEffect(() => {
     if (isStarted && currentQuestion && !isRecording) {
-      start().then(() => markStart(currentPart, currentIndex));
+      start();
     }
   }, [isStarted, currentQuestion]);
 
@@ -57,29 +59,40 @@ export default function IeltsSpeakingExam() {
   }, [currentQuestion?.audioUrl, isStarted]);
 
   
-  const handleSubmitResults = async () => {
-    setIsSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("audio", audioBlob as Blob);
-      formData.append("timings", JSON.stringify(timings));
-      formData.append("topicId", id!);
-  
-      const response = await fetch("https://your-api.com/api/ielts/speaking/submit", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) throw new Error("Submission failed");
-  
-      const { resultId } = await response.json();
-  
-      window.location.href = `/ielts/speaking/result/${resultId}`;
-    } catch (err) {
-      alert("❌ Failed to submit. Please try again.");
-      setIsSubmitting(false);
+  const handleSubmitResults = () => {
+    console.log('sending')
+    console.log(audioBlob, timings)
+    if (!audioBlob || timings.length === 0) {
+      console.warn("Audio or timings not ready");
+
+      return
     }
+  
+    setIsSubmitting(true);
+  
+    const formData = new FormData();
+    formData.append("audio", audioBlob);
+    formData.append("timings", JSON.stringify(timings));
+    formData.append("telegramId", "5166960259"); // trivonce
+  
+    submitMutation.mutate(formData, {
+      onSuccess: (data) => {
+        window.location.href = `/ielts/speaking/result/${data.resultId}`;
+      },
+      onError: (error) => {
+        console.error(error);
+        alert("❌ Failed to submit. Please try again.");
+        setIsSubmitting(false);
+      },
+    });
   };
+  
+  useEffect(() => {
+    if (isFinished && audioBlob && timings.length > 0 && !isSubmitting) {
+      console.log("🎯 Submitting now...");
+      handleSubmitResults();
+    }
+  }, [isFinished, audioBlob, timings]);
 
   const nextQuestion = () => {
     markEnd();
@@ -99,9 +112,12 @@ export default function IeltsSpeakingExam() {
     } else {
       stop();
       setIsFinished(true);
-      handleSubmitResults(); 
+
+      console.log('Exam is Finished')
     }
   };
+
+  console.log(audioBlob, timings)
 
   const handleLeaveExam = async () => {
     const result = await showAlert({

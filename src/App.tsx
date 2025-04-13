@@ -20,6 +20,7 @@ import IeltsSpeakingExam from "@/pages/ielts/speaking/exam";
 import IeltsSpeakingTopic from "./pages/ielts/speaking/[id]";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTelegramStore } from "./store/useTelegramStore";
+import IeltsSpeakingResult from "./pages/ielts/speaking/result";
 
 const App = () => {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -41,18 +42,6 @@ const App = () => {
 
 useEffect(() => {
   const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-  console.log(tgUser)
-
-  // // fallback mock for dev
-  // const mockUser = {
-  //   id: 5166960259,
-  //   first_name: "Dev User",
-  //   username: "devuser",
-  //   photo_url: "https://placekitten.com/200/200",
-  // };
-
-  // const isDev = import.meta.env.DEV;
-  // const user = tgUser || (isDev ? mockUser : null);
 
   if (tgUser) {
     setUser(tgUser);
@@ -70,7 +59,6 @@ if (true) {
   return (
     <QueryClientProvider  client={queryClient}>
       <TelegramProvider>
-        {JSON.stringify(window?.Telegram?.WebApp.initDataUnsafe)}
         {isFirstVisit ? (
           <Welcome onComplete={handleWelcomeComplete} />
         ) : (
@@ -87,6 +75,10 @@ if (true) {
                 <Route
                   path="speaking/topic/:id"
                   element={<IeltsSpeakingTopic />}
+                />
+                <Route
+                  path="speaking/result/:id"
+                  element={<IeltsSpeakingResult />}
                 />
                 <Route path="writing" element={<IeltsWriting />} />
                 <Route path="reading" element={<IeltsReading />} />

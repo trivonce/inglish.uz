@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { set, get, del } from "idb-keyval";
 
 export interface QuestionTiming {
   part: string;
@@ -7,8 +6,6 @@ export interface QuestionTiming {
   start: number;
   end?: number;
 }
-
-const DB_KEY = "ielts_audio_chunks";
 
 export function usePersistentRecorder() {
   const [isRecording, setIsRecording] = useState(false);
@@ -28,22 +25,16 @@ export function usePersistentRecorder() {
     mediaRecorderRef.current = recorder;
     allChunks.current = [];
 
-    recorder.ondataavailable = async (e) => {
+    recorder.ondataavailable = (e) => {
       allChunks.current.push(e.data);
-      const storedChunks = (await get<Blob[]>(DB_KEY)) || [];
-      storedChunks.push(e.data);
-      await set(DB_KEY, storedChunks);
     };
 
-    recorder.onstop = async () => {
-      const chunks = await get<Blob[]>(DB_KEY);
-      if (chunks) {
-        const fullBlob = new Blob(chunks, { type: "audio/webm" });
-        setAudioBlob(fullBlob);
-      }
+    recorder.onstop = () => {
+      const fullBlob = new Blob(allChunks.current, { type: "audio/webm" });
+      setAudioBlob(fullBlob);
     };
 
-    recorder.start(1000); // emit chunks every second
+    recorder.start(); // no interval needed
     setIsRecording(true);
     startOffset.current = performance.now();
   };
@@ -62,7 +53,6 @@ export function usePersistentRecorder() {
     streamRef.current = null;
     allChunks.current = [];
 
-    await del(DB_KEY);
     setIsRecording(false);
     setAudioBlob(null);
     setTimings([]);
@@ -73,9 +63,16 @@ export function usePersistentRecorder() {
   };
 
   const markStart = (part: string, index: number) => {
+    const alreadyExists = timings.some(
+      (t) => t.part === part && t.index === index && t.start !== undefined && t.end === undefined
+    );
+  
+    if (alreadyExists) return;
+  
     const t = (performance.now() - startOffset.current) / 1000;
     setTimings((prev) => [...prev, { part, index, start: t }]);
   };
+  
 
   const markEnd = () => {
     const t = (performance.now() - startOffset.current) / 1000;

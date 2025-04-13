@@ -20,3 +20,4 @@ export const submitSpeakingAnswers = async (id: string, payload: any) => {
   const res = await axios.post(`/api/ielts/speaking/${id}/submit`, payload);
   return res.data;
 };
+
