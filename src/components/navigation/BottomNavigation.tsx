@@ -4,9 +4,9 @@ import { Home, GamepadIcon, User, BookOpen } from "lucide-react"
 
 const BottomNavigation = () => {
   return (
-    <nav className="fixed bottom-2 left-3 right-3 rounded-xl bg-white/50 backdrop-blur-sm shadow-lg">
+    <nav className="fixed bottom-3 left-3 right-3 rounded-xl bg-white/50 backdrop-blur-sm shadow-lg">
       <div className="container mx-auto">
-        <div className="flex justify-around items-center h-14">
+        <div className="flex justify-around items-center h-16">
           <NavItem to="/" icon={<Home />} label="Home" />
           <NavItem to="/games" icon={<GamepadIcon />} label="Games" />
           <NavItem to="/ielts" icon={<BookOpen />} label="IELTS" />
