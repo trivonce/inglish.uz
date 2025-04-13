@@ -23,7 +23,7 @@ import { useTelegramStore } from "./store/useTelegramStore";
 
 const App = () => {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
-  const { setUser } = useTelegramStore();
+  const { setUser, user } = useTelegramStore();
 
   const queryClient = new QueryClient()
 
@@ -70,6 +70,7 @@ if (true) {
   return (
     <QueryClientProvider  client={queryClient}>
       <TelegramProvider>
+        {JSON.stringify(user)}
         {isFirstVisit ? (
           <Welcome onComplete={handleWelcomeComplete} />
         ) : (
