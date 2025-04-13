@@ -30,7 +30,7 @@ export default function IeltsSpeakingExam() {
     markEnd,
   } = usePersistentRecorder();
 
-  const currentQuestion = topic?.questions?.[currentPart]?.[currentIndex];
+  const currentQuestion: any = topic?.questions?.[currentPart]?.[currentIndex];
 
   useEffect(() => {
     if (isStarted && currentQuestion && !isRecording) {
