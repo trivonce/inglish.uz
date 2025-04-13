@@ -72,9 +72,8 @@ const IeltsSpeaking = () => {
         <h1 className="font-medium text-lg mt-5 mb-2"> Topics</h1>
         <div className="flex flex-col gap-2">
           {topics?.map((topic) => (
-            <Link to={`/ielts/speaking/topic/${topic._id}`}>
+            <Link key={topic._id} to={`/ielts/speaking/topic/${topic._id}`}>
               <Card
-                key={topic._id}
                 className="hover:shadow-lg transition-all cursor-pointer overflow-hidden border-0 p-2 flex flex-row justify-between items-center"
               >
                 <div className={`flex items-center gap-3 `}>

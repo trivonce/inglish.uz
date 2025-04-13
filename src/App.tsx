@@ -19,9 +19,12 @@ import HomePage from "@/pages/home";
 import IeltsSpeakingExam from "@/pages/ielts/speaking/exam";
 import IeltsSpeakingTopic from "./pages/ielts/speaking/[id]";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useTelegramStore } from "./store/useTelegramStore";
 
 const App = () => {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const { setUser } = useTelegramStore();
+
   const queryClient = new QueryClient()
 
   useEffect(() => {
@@ -35,6 +38,29 @@ const App = () => {
     localStorage.setItem("hasVisited", "true");
     setIsFirstVisit(false);
   };
+
+useEffect(() => {
+  const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+  // // fallback mock for dev
+  // const mockUser = {
+  //   id: 5166960259,
+  //   first_name: "Dev User",
+  //   username: "devuser",
+  //   photo_url: "https://placekitten.com/200/200",
+  // };
+
+  // const isDev = import.meta.env.DEV;
+  // const user = tgUser || (isDev ? mockUser : null);
+
+  if (tgUser) {
+    setUser(tgUser);
+    alert(tgUser)
+  } else {
+    console.warn("⚠️ No Telegram user found.");
+  }
+}, []);
+
 
   return (
     <QueryClientProvider  client={queryClient}>

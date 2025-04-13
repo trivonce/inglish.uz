@@ -5,6 +5,7 @@ export function useExamStart() {
     const [error, setError] = useState<string | null>(null)
   
     const requestPermission = async () => {
+        console.log('🎙️ Requesting mic permission...')
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         console.log(stream)
