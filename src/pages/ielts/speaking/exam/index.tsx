@@ -45,9 +45,9 @@ export default function IeltsSpeakingExam() {
   }, [isStarted, currentQuestion]);
 
   useEffect(() => {
-    if (!currentQuestion?.audioUrl || !isStarted) return;
+    if (!currentQuestion?.audio || !isStarted) return;
 
-    const audio = new Audio(currentQuestion.audioUrl);
+    const audio = new Audio(currentQuestion.audio);
     audio.play();
 
     audio.onended = () => {
@@ -56,7 +56,7 @@ export default function IeltsSpeakingExam() {
     };
 
     return () => audio.pause();
-  }, [currentQuestion?.audioUrl, isStarted]);
+  }, [currentQuestion?.audio, isStarted]);
 
   
   const handleSubmitResults = () => {
@@ -77,7 +77,7 @@ export default function IeltsSpeakingExam() {
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
-        window.location.href = `/ielts/speaking/result/${data.resultId}`;
+        window.location.href = `/ielts/speaking/result/${data.submissionId}`;
       },
       onError: (error) => {
         console.error(error);
@@ -144,12 +144,12 @@ export default function IeltsSpeakingExam() {
   
       deleteRequest.onerror = (e) => {
         console.error("❌ Error deleting IndexedDB", e);
-        window.location.href = "/ielts/speaking"; // still try to leave
+        window.location.href = "/ielts/speaking";
       };
   
       deleteRequest.onblocked = () => {
         console.warn("⚠️ IndexedDB deletion blocked — maybe another tab is using it");
-        window.location.href = "/ielts/speaking"; // still try to leave
+        window.location.href = "/ielts/speaking";
       };
     }
   };
