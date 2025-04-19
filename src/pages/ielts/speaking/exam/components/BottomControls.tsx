@@ -32,7 +32,7 @@ export default function BottomControls({
 
       <Button
         onClick={onNext}
-        // disabled={!canProceed}
+        disabled={!canProceed}
         className="bg-emerald-600 hover:bg-emerald-700 text-white"
       >
         Next <ArrowRight className="ml-2" />

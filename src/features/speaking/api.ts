@@ -16,8 +16,13 @@ export const getSpeakingAudiosById = async (id: string) => {
   return res.data;
 };
 
-export const submitSpeakingAnswers = async (id: string, payload: any) => {
-  const res = await axios.post(`/api/ielts/speaking/${id}/submit`, payload);
+export const submitSpeakingAnswers = async (payload: any) => {
+  const res = await axios.post(`/api/speaking/submit`, payload);
+  return res.data;
+};
+
+export const getSpeakingResultById = async (id: string) => {
+  const res = await axios.get(`/api/speaking/${id}`);
   return res.data;
 };
 

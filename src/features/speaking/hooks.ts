@@ -4,7 +4,8 @@ import {
   getSpeakingTopics,
   getSpeakingTopicById,
   getSpeakingAudiosById,
-  submitSpeakingAnswers
+  submitSpeakingAnswers,
+  getSpeakingResultById
 } from './api';
 import { SpeakingTopic, SpeakingAudio } from './types';
 
@@ -31,8 +32,16 @@ export const useSpeakingAudios = (id: string) => {
   });
 };
 
-export const useSubmitSpeakingAnswers = (id: string) => {
+export const useSubmitSpeakingAnswers = () => {
   return useMutation({
-    mutationFn: (payload: any) => submitSpeakingAnswers(id, payload)
+    mutationFn: (payload: any) => submitSpeakingAnswers(payload)
+  });
+};
+
+export const useSpeakingResult = (id: string) => {
+  return useQuery({
+    queryKey: ['speaking-result', id],
+    queryFn: () => getSpeakingResultById(id),
+    enabled: !!id
   });
 };

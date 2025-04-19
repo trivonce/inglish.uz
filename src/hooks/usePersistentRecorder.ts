@@ -1,8 +1,7 @@
 import { useState, useRef } from "react";
 
 export interface QuestionTiming {
-  part: string;
-  index: number;
+  questionId: string;
   start: number;
   end?: number;
 }
@@ -62,15 +61,19 @@ export function usePersistentRecorder() {
     await start();
   };
 
-  const markStart = (part: string, index: number) => {
-    const alreadyExists = timings.some(
-      (t) => t.part === part && t.index === index && t.start !== undefined && t.end === undefined
-    );
-  
-    if (alreadyExists) return;
-  
+  const markStart = (questionId: string) => {
+    // First, mark end for the previous question if it exists
+    if (timings.length > 0 && !timings[timings.length - 1].end) {
+      const t = (performance.now() - startOffset.current) / 1000;
+      setTimings(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1].end = t;
+        return updated;
+      });
+    }
+
     const t = (performance.now() - startOffset.current) / 1000;
-    setTimings((prev) => [...prev, { part, index, start: t }]);
+    setTimings((prev) => [...prev, { questionId, start: t }]);
   };
   
 

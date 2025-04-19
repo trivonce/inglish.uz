@@ -16,7 +16,7 @@ import SubmitLoadingScreen from "./components/SubmitLoadingScreen";
 export default function IeltsSpeakingExam() {
   const { id } = useParams<{ id: string }>();
   const { data: topic } = useSpeakingTopic(id!);
-  const submitMutation = useSubmitSpeakingAnswers(id!);
+  const submitMutation = useSubmitSpeakingAnswers();
 
   const [currentPart, setCurrentPart] = useState<1 | 2 | 3>(1);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -47,17 +47,31 @@ export default function IeltsSpeakingExam() {
   }, [isStarted, currentQuestion]);
 
   useEffect(() => {
-    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
+    console.log('Current question:', currentQuestion);
+    console.log('Audio URL:', currentQuestion?.audios?.[0]?.audioUrl);
+    
+    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) {
+      console.log('Skipping audio playback - missing URL or not started');
+      return;
+    }
 
     const audio = new Audio(currentQuestion.audios[0].audioUrl);
-    audio.play();
+    console.log('Created audio element');
+    
+    audio.play().catch(error => {
+      console.error('Error playing audio:', error);
+    });
 
     audio.onended = () => {
-      markStart(`part${currentPart}`, currentIndex);
-      setTimeout(() => setCanProceed(true), 5000);
+      console.log('Audio ended');
+      markStart(currentQuestion.id);
+      setTimeout(() => setCanProceed(true), 4000);
     };
 
-    return () => audio.pause();
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
   }, [currentQuestion?.audios, isStarted]);
 
   
@@ -75,11 +89,12 @@ export default function IeltsSpeakingExam() {
     const formData = new FormData();
     formData.append("audio", audioBlob);
     formData.append("timings", JSON.stringify(timings));
+    formData.append("topicId", id!);
     formData.append("telegramId", "5166960259"); // trivonce
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
-        window.location.href = `/ielts/speaking/result/${data.submissionId}`;
+        window.location.href = `/ielts/speaking/result/${data.speakingAnswerId}`;
       },
       onError: (error) => {
         console.error(error);
@@ -162,7 +177,6 @@ export default function IeltsSpeakingExam() {
           await requestPermission();
           if (!error) {
             await start();
-            markStart("part1", 0);
           }
         }}
         error={error}
