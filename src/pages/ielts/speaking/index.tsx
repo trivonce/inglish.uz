@@ -72,7 +72,7 @@ const IeltsSpeaking = () => {
         <h1 className="font-medium text-lg mt-5 mb-2"> Topics</h1>
         <div className="flex flex-col gap-2">
           {topics?.map((topic) => (
-            <Link key={topic._id} to={`/ielts/speaking/topic/${topic._id}`}>
+            <Link key={topic.id} to={`/ielts/speaking/topic/${topic.id}`}>
               <Card
                 className="hover:shadow-lg transition-all cursor-pointer overflow-hidden border-0 p-2 flex flex-row justify-between items-center"
               >
@@ -85,9 +85,9 @@ const IeltsSpeaking = () => {
                   <div className="space-y-1">
                     <h3 className="font-medium text-sm line-clamp-1">{topic.title}</h3>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-slate-500">{topic.questionCount} questions</p>
+                      <p className="text-xs text-slate-500">{0} questions</p>
                       <Separator className="!h-3" orientation="vertical" />
-                      <p className="text-xs text-slate-500">{topic.takenCount} users</p>
+                      <p className="text-xs text-slate-500">{0} users</p>
                     </div>
                   </div>
                 </div>

@@ -2,12 +2,12 @@
 import axios from '@/lib/axios';
 
 export const getSpeakingTopics = async () => {
-  const res = await axios.get('/api/ielts/speaking/topics/');
+  const res = await axios.get('/api/topics/');
   return res.data;
 };
 
 export const getSpeakingTopicById = async (id: string) => {
-  const res = await axios.get(`/api/ielts/speaking/topics/${id}`);
+  const res = await axios.get(`/api/topics/${id}`);
   return res.data;
 };
 

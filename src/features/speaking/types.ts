@@ -1,35 +1,28 @@
 export type SpeakingQuestion = {
+    id: string;
+    topicId: string;
+    partNumber: number;
     text: string;
-    bulletPoints?: string[];
-  };
-  
-  export type SpeakingAudio = {
-    number: number;
-    url: string;
-  };
-  
-  export type SpeakingTopic = {
-    _id: string;
+    bullets: string[];
+    order: number;
+    audios: SpeakingAudio[];
+};
+
+export type SpeakingAudio = {
+    id: string;
+    questionId: string;
+    accent: string;
+    audioUrl: string;
+    createdAt: string;
+};
+
+export type SpeakingTopic = {
+    id: string;
     title: string;
     description: string;
     icon: string;
-    color: string;
-    questionCount: number;
-    takenCount: number;
-    difficulty?: string;
-    tips?: string[];
-    sampleQuestions?: string[];
-    questionTypes?: string[];
-    commonVocabulary?: string[];
-    questions: {
-      part1: SpeakingQuestion[];
-      part2: SpeakingQuestion[];
-      part3: SpeakingQuestion[];
-    };
-    audios?: {
-      part1: SpeakingAudio[];
-      part2: SpeakingAudio[];
-      part3: SpeakingAudio[];
-    };
-  };
+    createdAt: string;
+    updatedAt: string;
+    questions: SpeakingQuestion[];
+};
   

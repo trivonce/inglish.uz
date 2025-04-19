@@ -18,7 +18,7 @@ export default function IeltsSpeakingExam() {
   const { data: topic } = useSpeakingTopic(id!);
   const submitMutation = useSubmitSpeakingAnswers(id!);
 
-  const [currentPart, setCurrentPart] = useState<"part1" | "part2" | "part3">("part1");
+  const [currentPart, setCurrentPart] = useState<1 | 2 | 3>(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [canProceed, setCanProceed] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -36,7 +36,9 @@ export default function IeltsSpeakingExam() {
     markEnd,
   } = usePersistentRecorder();
 
-  const currentQuestion: any = topic?.questions?.[currentPart]?.[currentIndex];
+  const currentQuestion = topic?.questions.find(
+    q => q.partNumber === currentPart && q.order === currentIndex + 1
+  );
 
   useEffect(() => {
     if (isStarted && currentQuestion && !isRecording) {
@@ -45,18 +47,18 @@ export default function IeltsSpeakingExam() {
   }, [isStarted, currentQuestion]);
 
   useEffect(() => {
-    if (!currentQuestion?.audio || !isStarted) return;
+    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
 
-    const audio = new Audio(currentQuestion.audio);
+    const audio = new Audio(currentQuestion.audios[0].audioUrl);
     audio.play();
 
     audio.onended = () => {
-      markStart(currentPart, currentIndex);
+      markStart(`part${currentPart}`, currentIndex);
       setTimeout(() => setCanProceed(true), 5000);
     };
 
     return () => audio.pause();
-  }, [currentQuestion?.audio, isStarted]);
+  }, [currentQuestion?.audios, isStarted]);
 
   
   const handleSubmitResults = () => {
@@ -98,22 +100,20 @@ export default function IeltsSpeakingExam() {
     markEnd();
     setCanProceed(false);
   
+    const currentPartQuestions = topic?.questions.filter(q => q.partNumber === currentPart) || [];
     const nextIndex = currentIndex + 1;
-    const currentPartQuestions = topic?.questions?.[currentPart] || [];
   
     if (nextIndex < currentPartQuestions.length) {
       setCurrentIndex(nextIndex);
-    } else if (currentPart === "part1") {
-      setCurrentPart("part2");
+    } else if (currentPart === 1) {
+      setCurrentPart(2);
       setCurrentIndex(0);
-    } else if (currentPart === "part2") {
-      setCurrentPart("part3");
+    } else if (currentPart === 2) {
+      setCurrentPart(3);
       setCurrentIndex(0);
     } else {
       stop();
       setIsFinished(true);
-
-      console.log('Exam is Finished')
     }
   };
 
@@ -176,7 +176,7 @@ export default function IeltsSpeakingExam() {
   
   return (
     <div className="h-screen flex flex-col justify-between">
-      <TopBar part={currentPart} />
+      <TopBar part={`Part ${currentPart}`} />
       {currentQuestion && (
         <QuestionContent index={currentIndex} text={currentQuestion.text} />
       )}

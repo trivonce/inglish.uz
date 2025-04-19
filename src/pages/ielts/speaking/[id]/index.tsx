@@ -90,34 +90,29 @@ const IeltsSpeakingDetail = () => {
               </h3>
 
               <Accordion type="multiple" className="w-full space-y-2">
-                {["part1", "part2", "part3"].map((partKey) => {
-                  const questions =
-                    topic.questions?.[
-                      partKey as keyof SpeakingTopic["questions"]
-                    ] || [];
+                {[1, 2, 3].map((partNumber) => {
+                  const questions = topic?.questions.filter(q => q.partNumber === partNumber) || [];
                   if (!questions.length) return null;
 
                   return (
-                    <AccordionItem key={partKey} value={partKey}>
+                    <AccordionItem key={partNumber} value={`part${partNumber}`}>
                       <AccordionTrigger className="capitalize">
-                        {partKey.replace("part", "Part ")}
+                        Part {partNumber}
                       </AccordionTrigger>
                       <AccordionContent>
                         <ul className="space-y-3">
-                          {questions.map((q, index) => (
+                          {questions.map((q) => (
                             <li
-                              key={index}
+                              key={q.id}
                               className="bg-gray-100 rounded-md p-3"
                             >
-                              <strong>{index + 1}. </strong>
+                              <strong>{q.order}. </strong>
                               {q.text}
-                              {(q.bulletPoints as string[])?.length > 0 && (
+                              {q.bullets.length > 0 && (
                                 <ul className="list-disc pl-5 mt-1 text-sm text-gray-700">
-                                  {q.bulletPoints?.map(
-                                    (point: string, i: number) => (
-                                      <li key={i}>{point}</li>
-                                    )
-                                  )}
+                                  {q.bullets.map((point, i) => (
+                                    <li key={i}>{point}</li>
+                                  ))}
                                 </ul>
                               )}
                             </li>
@@ -175,14 +170,14 @@ const IeltsSpeakingDetail = () => {
         </CardContent>
       </Card> */}
 
-        <div className="flex justify-center mt-4">
+        {/* <div className="flex justify-center mt-4">
           <Button
             onClick={handleStartTest}
             className="bg-emerald-600 hover:bg-emerald-700"
           >
             <Mic className="h-4 w-4 mr-2" /> Start Mock Test
           </Button>
-        </div>
+        </div> */}
       </div>
     </>
   );

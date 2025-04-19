@@ -57,7 +57,7 @@ if (true) {
 }
 
   return (
-    <QueryClientProvider  client={queryClient}>
+    <QueryClientProvider client={queryClient}>
       <TelegramProvider>
         {isFirstVisit ? (
           <Welcome onComplete={handleWelcomeComplete} />
