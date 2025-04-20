@@ -2,19 +2,35 @@ import type React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useTelegram } from "@/context/TelegramContext"
-import { Award, BarChart3, BookOpen, Calendar, Clock, Settings, Star, Trophy, User, Mic } from "lucide-react"
+import {
+  Award,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  Clock,
+  Settings,
+  Star,
+  Trophy,
+  User,
+  Mic,
+  FileText,
+  GraduationCap,
+  MessageCircle,
+  ChevronRight,
+} from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import {Link} from "react-router-dom"
 
 const Profile = () => {
   const { user } = useTelegram()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-emerald-800">Profile</h1>
-        <Button variant="ghost" size="icon">
+        {/* <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
-        </Button>
+        </Button> */}
       </header>
 
       <Card>
@@ -25,36 +41,72 @@ const Profile = () => {
                 <img
                   src={user.photo_url || "/placeholder.svg"}
                   alt={user.first_name}
-                  className="h-20 w-20 rounded-full"
+                  className="h-20 w-20 rounded-full shrink-0"
                 />
               ) : (
-                <User className="h-10 w-10 text-emerald-600" />
+                <User className="h-10 w-10 text-emerald-600 shrink-0" />
               )}
             </div>
             <div>
               <h2 className="text-xl font-bold">
                 {user?.first_name || "User"} {user?.last_name || ""}
               </h2>
-              <p className="text-gray-600">@{user?.username || "username"}</p>
+              <p className="text-gray-600">@{user?.username || user?.id}</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-medium">
                   Intermediate
                 </span>
-                <span className="text-gray-500 text-xs">Member since April 2023</span>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* New Routes Section */}
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="font-semibold mb-4 flex items-center">
+            <GraduationCap className="h-5 w-5 mr-2 text-emerald-600" />
+            Quick Access
+          </h3>
+
+          <div className="grid grid-cols-1 gap-3">
+            <RouteCard
+              icon={<FileText className="h-5 w-5 text-emerald-600" />}
+              title="Speaking Results"
+              description="View your test scores and progress reports"
+              href="/ielts/speaking/results"
+            />
+            {/* <RouteCard
+              icon={<BookOpen className="h-5 w-5 text-emerald-600" />}
+              title="Learning Materials"
+              description="Access your lessons and study materials"
+              href="/materials"
+            /> */}
+            {/* <RouteCard
+              icon={<MessageCircle className="h-5 w-5 text-emerald-600" />}
+              title="Speaking Practice"
+              description="Practice conversations and pronunciation"
+              href="/speaking"
+            /> */}
+            {/* <RouteCard
+              icon={<BarChart3 className="h-5 w-5 text-emerald-600" />}
+              title="Detailed Statistics"
+              description="In-depth analysis of your learning journey"
+              href="/statistics"
+            /> */}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* <div className="grid grid-cols-2 gap-4">
         <StatCard icon={<Trophy className="h-5 w-5 text-amber-500" />} value="1,250" label="XP Points" />
         <StatCard icon={<Calendar className="h-5 w-5 text-emerald-500" />} value="15" label="Day Streak" />
         <StatCard icon={<BookOpen className="h-5 w-5 text-blue-500" />} value="120" label="Words Learned" />
         <StatCard icon={<Clock className="h-5 w-5 text-purple-500" />} value="8h 30m" label="Study Time" />
-      </div>
+      </div> */}
 
-      <Card>
+      {/* <Card>
         <CardContent className="p-4">
           <h3 className="font-semibold mb-4 flex items-center">
             <BarChart3 className="h-5 w-5 mr-2 text-emerald-600" />
@@ -68,9 +120,9 @@ const Profile = () => {
             <ProgressItem label="Listening" value={58} level="Intermediate" />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <Card>
+      {/* <Card>
         <CardContent className="p-4">
           <h3 className="font-semibold mb-4 flex items-center">
             <Award className="h-5 w-5 mr-2 text-emerald-600" />
@@ -94,9 +146,9 @@ const Profile = () => {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <Button className="w-full bg-emerald-600 hover:bg-emerald-700">View Detailed Statistics</Button>
+      {/* <Button className="w-full bg-emerald-600 hover:bg-emerald-700">View Detailed Statistics</Button> */}
     </div>
   )
 }
@@ -154,6 +206,34 @@ const AchievementItem = ({ icon, title, unlocked }: AchievementItemProps) => {
       <div className="mb-1">{icon}</div>
       <span className="text-xs font-medium">{title}</span>
     </div>
+  )
+}
+
+interface RouteCardProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+  href: string
+}
+
+const RouteCard = ({ icon, title, description, href }: RouteCardProps) => {
+  return (
+    <Link to={href}>
+      <Card className="hover:bg-emerald-50 transition-colors cursor-pointer">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-100 p-2 rounded-full">{icon}</div>
+              <div>
+                <h4 className="font-medium text-emerald-800">{title}</h4>
+                <p className="text-xs text-gray-600">{description}</p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-emerald-600" />
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
 

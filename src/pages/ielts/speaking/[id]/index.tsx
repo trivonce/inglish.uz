@@ -50,7 +50,7 @@ const IeltsSpeakingDetail = () => {
 
   return (
     <>
-      <div hidden className="mb-4 flex justify-center">
+      {/* <div className="mb-4 flex justify-center">
         <div
           onClick={handleBackToTopics}
           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-100 to-teal-100 
@@ -62,11 +62,17 @@ const IeltsSpeakingDetail = () => {
           </div>
           <span className="font-medium">Back to Topics</span>
         </div>
-      </div>
+      </div> */}
       <div className="space-y-4">
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg p-6">
-          <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
-          <p className="mb-4">{topic.description}</p>
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg p-6 relative">
+          <div className="">
+            <div>
+              <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
+              <p className="mb-4">{topic.description}</p>
+            </div>
+
+            <img src={topic.icon} alt={topic.title} className="w-full h-60 object-cover rounded-lg" />
+          </div>
           {/* <div className="flex items-center gap-2 mb-4">
           <div className={`px-3 py-1 rounded-full text-sm font-medium bg-white/20`}>Difficulty: {topic.difficulty}</div>
           <div className="px-3 py-1 rounded-full text-sm font-medium bg-white/20">
@@ -75,7 +81,7 @@ const IeltsSpeakingDetail = () => {
         </div> */}
           <Button
             onClick={handleStartTest}
-            className="bg-white text-emerald-700 hover:bg-gray-100"
+            className="bg-white text-emerald-700 hover:bg-gray-100 absolute bottom-3 right-3"
           >
             <Mic className="h-4 w-4 mr-2" /> Start Mock Test
           </Button>

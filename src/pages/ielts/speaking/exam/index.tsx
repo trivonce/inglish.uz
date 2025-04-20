@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSpeakingTopic } from "@/features/speaking/hooks";
 import { usePersistentRecorder } from "@/hooks/usePersistentRecorder";
 import { useExamStart } from "@/hooks/useExamStart";
-import ReadyPrompt from "@/components/ReadyPrompt";
+import ReadyPrompt from "@/pages/ielts/speaking/exam/components/ReadyPrompt";
 import { showAlert } from "@/lib/alert";
 import { useSubmitSpeakingAnswers } from "@/features/speaking/hooks";
 
@@ -12,11 +12,14 @@ import TopBar from "./components/TopBar";
 import QuestionContent from "./components/QuestionContent";
 import BottomControls from "./components/BottomControls";
 import SubmitLoadingScreen from "./components/SubmitLoadingScreen";
+import { useTelegramStore } from "@/store/useTelegramStore";
 
 export default function IeltsSpeakingExam() {
   const { id } = useParams<{ id: string }>();
   const { data: topic } = useSpeakingTopic(id!);
   const submitMutation = useSubmitSpeakingAnswers();
+  const { user} = useTelegramStore()
+  const navigate = useNavigate()
 
   const [currentPart, setCurrentPart] = useState<1 | 2 | 3>(1);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -90,11 +93,11 @@ export default function IeltsSpeakingExam() {
     formData.append("audio", audioBlob);
     formData.append("timings", JSON.stringify(timings));
     formData.append("topicId", id!);
-    formData.append("telegramId", "5166960259"); // trivonce
+    formData.append("telegramId", user?.id.toString() || "");
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
-        window.location.href = `/ielts/speaking/result/${data.speakingAnswerId}`;
+        window.location.href = `/ielts/speaking/results/${data.speakingAnswerId}`;
       },
       onError: (error) => {
         console.error(error);
@@ -137,7 +140,7 @@ export default function IeltsSpeakingExam() {
   const handleLeaveExam = async () => {
     const result = await showAlert({
       title: "Leave Exam?",
-      text: `Your progress (answers and audio for ${currentIndex + 1} question(s)) will be lost. Are you sure you want to leave?`,
+      text: `Your progress will be lost. Are you sure you want to leave?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, leave",
@@ -173,6 +176,7 @@ export default function IeltsSpeakingExam() {
   if (!isStarted) {
     return (
       <ReadyPrompt
+      onGoBack={() => navigate(-1)}
         onAllow={async () => {
           await requestPermission();
           if (!error) {
@@ -192,7 +196,7 @@ export default function IeltsSpeakingExam() {
     <div className="h-screen flex flex-col justify-between">
       <TopBar part={`Part ${currentPart}`} />
       {currentQuestion && (
-        <QuestionContent index={currentIndex} text={currentQuestion.text} />
+        <QuestionContent index={currentIndex} text={currentQuestion.text} bullets={currentQuestion.bullets} />
       )}
       <BottomControls
         onLeave={handleLeaveExam}

@@ -23,7 +23,7 @@ export default function IeltsPage() {
       id: "speaking",
       title: "Speaking",
       icon: <Mic className="h-8 w-8 text-emerald-600" />,
-      description: "Practice your English speaking skills with mock interviews",
+      description: "Practice your English speaking skills with mock tests",
       available: true,
     },
     {
@@ -70,14 +70,14 @@ export default function IeltsPage() {
             Track your progress across all four IELTS skills and improve your
             overall band score.
           </p>
-          <div className="flex items-center gap-2 text-sm">
+          {/* <div className="flex items-center gap-2 text-sm">
             <div className="bg-white/20 px-3 py-1 rounded-full">
               Current Score: 6.5
             </div>
             <div className="bg-white/20 px-3 py-1 rounded-full">
               Target: 7.5
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 
@@ -114,7 +114,7 @@ export default function IeltsPage() {
         ))}
       </div>
 
-      <Card>
+      {/* <Card>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold flex items-center">
@@ -153,9 +153,9 @@ export default function IeltsPage() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+      <div className="bg-emerald-100 rounded-lg p-4">
         <h3 className="font-medium text-emerald-800 mb-2">IELTS Tips</h3>
         <ul className="space-y-1 text-sm text-emerald-700">
           <li className="flex items-start gap-2">

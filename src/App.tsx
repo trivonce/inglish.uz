@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import Welcome from "@/pages/Welcome";
 // import Home from "@/pages/Home";
-import Games from "@/pages/Games";
-import Profile from "@/pages/Profile";
+import Profile from "@/pages/profile";
 import { TelegramProvider } from "@/context/TelegramContext";
 
 // pages
@@ -14,13 +13,18 @@ import IeltsWriting from "@/pages/ielts/writing";
 import IeltsReading from "@/pages/ielts/reading";
 import IeltsListening from "@/pages/ielts/listening";
 import IeltsPage from "@/pages/ielts";
+import GamesPage from "@/pages/games";
 import AuthPage from "@/pages/auth";
 import HomePage from "@/pages/home";
+
+// ielts speaking
 import IeltsSpeakingExam from "@/pages/ielts/speaking/exam";
-import IeltsSpeakingTopic from "./pages/ielts/speaking/[id]";
+import IeltsSpeakingResults from "@/pages/ielts/speaking/results";
+import IeltsSpeakingTopic from "@/pages/ielts/speaking/[id]";
+import IeltsSpeakingResult from "@/pages/ielts/speaking/results/[id]";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTelegramStore } from "./store/useTelegramStore";
-import IeltsSpeakingResult from "./pages/ielts/speaking/result";
 
 const App = () => {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -39,22 +43,41 @@ const App = () => {
     localStorage.setItem("hasVisited", "true");
     setIsFirstVisit(false);
   };
+  // comment
 
-useEffect(() => {
-  const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  useEffect(() => {
+    console.log('window', window)
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+    } else {
+      console.error("Telegram WebApp not found.");
+    }
+  }, []);
 
-  if (tgUser) {
-    setUser(tgUser);
-  } else {
-    console.warn("⚠️ No Telegram user found.");
-  }
-}, []);
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+  
+    if (!tg) {
+      console.warn("❌ Telegram WebApp not found.");
+      return;
+    }
+  
+    tg.ready(); 
+  
+    const user = tg.initDataUnsafe?.user;
+  
+    if (user) {
+      setUser(user);
+    } else {
+      console.warn("⚠️ No Telegram user found in initDataUnsafe.");
+    }
+  }, []);
 
-if (true) {
-  import("eruda").then((eruda) => {
-    eruda.default.init();
-  });
-}
+// if (true) {
+//   import("eruda").then((eruda) => {
+//     eruda.default.init();
+//   });
+// }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -67,7 +90,7 @@ if (true) {
 
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="games" element={<Games />} />
+              <Route path="games" element={<GamesPage />} />
 
               <Route path="ielts" element={<IeltsLayout />}>
                 <Route index element={<IeltsPage />} />
@@ -77,7 +100,11 @@ if (true) {
                   element={<IeltsSpeakingTopic />}
                 />
                 <Route
-                  path="speaking/result/:id"
+                  path="speaking/results"
+                  element={<IeltsSpeakingResults />}
+                />
+                <Route
+                  path="speaking/results/:id"
                   element={<IeltsSpeakingResult />}
                 />
                 <Route path="writing" element={<IeltsWriting />} />

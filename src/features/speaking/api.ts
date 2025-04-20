@@ -21,6 +21,11 @@ export const submitSpeakingAnswers = async (payload: any) => {
   return res.data;
 };
 
+export const getUserSpeakingResults = async (userId: string) => {
+  const res = await axios.get(`/api/speaking/results/${userId}`);
+  return res.data;
+}
+
 export const getSpeakingResultById = async (id: string) => {
   const res = await axios.get(`/api/speaking/${id}`);
   return res.data;

@@ -5,7 +5,7 @@ interface TopBarProps {
   
   export default function TopBar({ part }: TopBarProps) {
     return (
-      <div className="p-4 text-center text-sm font-medium bg-gray-100">
+      <div className="p-4 text-center text-sm font-medium bg-emerald-50">
         {part.toUpperCase()}
       </div>
     );

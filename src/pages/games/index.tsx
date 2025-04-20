@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Construction, Gamepad2 } from "lucide-react"
 
-const Games = () => {
+const GamesPage = () => {
   return (
     <div className="space-y-6">
       <header>
@@ -23,14 +23,14 @@ const Games = () => {
               <Gamepad2 className="h-12 w-12 text-emerald-500 animate-pulse delay-100" />
               <Gamepad2 className="h-12 w-12 text-emerald-600 animate-pulse delay-200" />
             </div>
-            <div className="mt-8">
+            {/* <div className="mt-8">
               <Button className="bg-emerald-600 hover:bg-emerald-700">Get Notified</Button>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
 
-      <section>
+      {/* <section>
         <h2 className="text-xl font-bold text-gray-800 mb-4">Game Previews</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <GamePreview
@@ -54,7 +54,7 @@ const Games = () => {
             image="/placeholder.svg?height=200&width=300"
           />
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }
@@ -82,4 +82,4 @@ const GamePreview = ({ title, description, image }: GamePreviewProps) => {
   )
 }
 
-export default Games
+export default GamesPage

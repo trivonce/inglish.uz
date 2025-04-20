@@ -2,7 +2,7 @@ import type React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useTelegram } from "@/context/TelegramContext"
-import { BookOpen, Mic, Trophy, Zap } from "lucide-react"
+import { BookOpen, Clock, Lock, Mic, Trophy, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const HomePage = () => {
@@ -15,22 +15,30 @@ const HomePage = () => {
           <h1 className="text-2xl font-bold text-emerald-800">Hello, {user?.first_name || "Student"}!</h1>
           <p className="text-gray-600">Ready to improve your English today?</p>
         </div>
-        <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+        <Link to='/profile' className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
           {user?.photo_url ? (
             <img src={user.photo_url || "/placeholder.svg"} alt={user.first_name} className="h-10 w-10 rounded-full" />
           ) : (
             <span className="text-emerald-600 font-bold">{user?.first_name?.charAt(0) || "U"}</span>
           )}
-        </div>
+        </Link>
       </header>
 
       <section className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white">
-        <h2 className="text-xl font-bold mb-2">Daily Challenge</h2>
-        <p className="mb-4">Complete today's challenge to earn extra points!</p>
-        <Button variant="secondary" className="bg-white text-emerald-700 hover:bg-gray-100">
-          Start Challenge
-        </Button>
+        <h2 className="text-xl font-bold mb-2">Today's Speaking Challenge</h2>
+        <p className="mb-4">
+          Practice your speaking skills with a new IELTS-style question every day.
+        </p>
+        <Link to="/ielts/speaking">
+          <Button
+            variant="secondary"
+            className="bg-white text-emerald-700 hover:bg-gray-100"
+          >
+            Start Speaking Challenge
+          </Button>
+        </Link>
       </section>
+
 
       <section>
         <h2 className="text-xl font-bold text-gray-800 mb-4">Continue Learning</h2>
@@ -39,21 +47,24 @@ const HomePage = () => {
             title="IELTS Speaking"
             description="Practice for your exam"
             icon={<Mic className="h-6 w-6 text-emerald-600" />}
-            to="/ielts-speaking"
+            to="/ielts/speaking"
           />
           <FeatureCard
+            comingSoon
             title="Fun Games"
             description="Learn while playing"
             icon={<Zap className="h-6 w-6 text-emerald-600" />}
             to="/games"
           />
           <FeatureCard
+            comingSoon
             title="Vocabulary"
             description="Expand your word bank"
             icon={<BookOpen className="h-6 w-6 text-emerald-600" />}
             to="/"
           />
           <FeatureCard
+            comingSoon
             title="Achievements"
             description="Track your progress"
             icon={<Trophy className="h-6 w-6 text-emerald-600" />}
@@ -62,7 +73,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section>
+      {/* <section>
         <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Activity</h2>
         <Card>
           <CardContent className="p-4">
@@ -73,7 +84,7 @@ const HomePage = () => {
             </div>
           </CardContent>
         </Card>
-      </section>
+      </section> */}
     </div>
   )
 }
@@ -83,19 +94,27 @@ interface FeatureCardProps {
   description: string
   icon: React.ReactNode
   to: string
+  comingSoon?: boolean
 }
 
-const FeatureCard = ({ title, description, icon, to }: FeatureCardProps) => {
+const FeatureCard = ({ title, description, icon, to, comingSoon }: FeatureCardProps) => {
   return (
-    <Link to={to}>
-      <Card className="h-full hover:shadow-md transition-shadow">
-        <CardContent className="p-4 flex flex-col items-center text-center">
-          <div className="mb-2 mt-2">{icon}</div>
-          <h3 className="font-semibold text-gray-800">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
-        </CardContent>
-      </Card>
-    </Link>
+    <div className="relative">
+      {comingSoon && <div className="absolute top-0 left-0 w-full h-full bg-black/10 rounded-lg backdrop-blur-[2px]">
+              <div className="animate-shake flex flex-col items-center gap-1 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/50 rounded-md px-2 py-3 text-nowrap text-green-500 text-xs font-medium">
+               <Lock className="w-5 h-5" /> Coming Soon
+              </div>
+            </div>}
+      <Link to={to}>
+        <Card className="h-full hover:shadow-md transition-shadow">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <div className="mb-2 mt-2">{icon}</div>
+            <h3 className="font-semibold text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-600">{description}</p>
+          </CardContent>
+        </Card>
+      </Link>
+    </div>
   )
 }
 

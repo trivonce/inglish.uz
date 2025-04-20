@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Play, Pause, Download } from "lucide-react"
 import { toast } from "sonner"
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -101,6 +99,23 @@ export default function ResultsPage() {
     toast.success("Download started")
   }
 
+  // Show loading toast while processing
+  useEffect(() => {
+    if (result?.status === 'PENDING') {
+      const toastId = toast.loading("Processing your speaking test...", {
+        duration: Infinity,
+      });
+
+      return () => {
+        toast.dismiss(toastId);
+      };
+    } else if (result?.status === 'COMPLETED') {
+      toast.success("Results are ready!");
+    } else if (result?.status === 'FAILED') {
+      toast.error("Failed to process your speaking test");
+    }
+  }, [result?.status]);
+
   if (isLoading) {
     return (
       <div className="container py-10 flex items-center justify-center min-h-[60vh]">
@@ -122,31 +137,33 @@ export default function ResultsPage() {
     )
   }
 
+  if (result.status === 'PENDING') {
+    return (
+      <div className="container py-10 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <h2 className="text-xl font-medium">Processing your speaking test</h2>
+          <p className="text-muted-foreground">This may take a few minutes. Please wait while we analyze your responses.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="container py-8 space-y-8">
+    <div className="container space-y-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Speaking Test Results</h1>
             <p className="text-muted-foreground mt-1">
               Topic: {result?.topic?.title || 'Unknown Topic'} • {new Date().toLocaleDateString()}
             </p>
           </div>
-          {/* <div className="flex items-center gap-2">
-            <Button onClick={togglePlayback} variant="outline" size="sm">
-              {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-              {isPlaying ? "Pause Recording" : "Play Recording"}
-            </Button>
-            <Button onClick={handleDownload} variant="ghost" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Download
-            </Button>
-          </div> */}
         </div>
       </motion.div>
 
       <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="detailed">Detailed Feedback</TabsTrigger>
         </TabsList>
@@ -154,16 +171,16 @@ export default function ResultsPage() {
         <TabsContent value="overview" className="space-y-6 mt-6">
           <div className="grid gap-6 md:grid-cols-2">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               <OverallScoreCard score={overallScore} />
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Card>
@@ -217,7 +234,7 @@ export default function ResultsPage() {
           </motion.div>
         </TabsContent>
 
-        <TabsContent value="detailed" className="space-y-6 mt-6">
+        <TabsContent value="detailed" className="space-y-4 mt-6 bg-white px-3 rounded-md">
           <Accordion type="single" collapsible className="w-full">
             {result?.feedbacks?.length ? result.feedbacks.map((feedback: {
               questionId: string;

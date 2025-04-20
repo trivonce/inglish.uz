@@ -24,5 +24,6 @@ export type SpeakingTopic = {
     createdAt: string;
     updatedAt: string;
     questions: SpeakingQuestion[];
+    questionsCount: number;
 };
   
