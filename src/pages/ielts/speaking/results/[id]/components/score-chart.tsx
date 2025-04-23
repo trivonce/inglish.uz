@@ -13,6 +13,7 @@ interface ScoreChartProps {
   }
 }
 
+
 export function ScoreChart({ scores }: ScoreChartProps) {
   const chartRef = useRef<HTMLDivElement>(null)
 

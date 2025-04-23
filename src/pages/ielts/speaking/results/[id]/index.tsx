@@ -14,6 +14,11 @@ import { OverallScoreCard } from "./components/overall-score-card"
 import { QuestionFeedback } from "./components/question-feedback"
 import { useSpeakingResult } from "@/features/speaking/hooks"
 
+
+function roundToNearest(value: number, step: number) {
+  return Math.round(value / step) * step;
+}
+
 export default function ResultsPage() {
   const { id } = useParams<{ id: string }>();
   const { data: result, isLoading } = useSpeakingResult(id!);
@@ -232,7 +237,7 @@ export default function ResultsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <OverallScoreCard score={result?.bandScore || 0} />
+              <OverallScoreCard score={roundToNearest(Number(result?.bandScore), 0.5) || 0} />
             </motion.div>
 
             {/* <motion.div
