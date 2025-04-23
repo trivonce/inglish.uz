@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -29,11 +30,11 @@ export default function ResultsPage() {
 
   // Calculate average scores for each criterion
   const averageScores = result?.feedbacks?.length ? {
-    fluency: result.feedbacks.reduce((sum: number, f: { fluency: number }) => sum + f.fluency, 0) / result.feedbacks.length,
-    coherence: result.feedbacks.reduce((sum: number, f: { coherence: number }) => sum + f.coherence, 0) / result.feedbacks.length,
-    lexicalResource: result.feedbacks.reduce((sum: number, f: { lexicalResource: number }) => sum + f.lexicalResource, 0) / result.feedbacks.length,
-    grammaticalRange: result.feedbacks.reduce((sum: number, f: { grammaticalRange: number }) => sum + f.grammaticalRange, 0) / result.feedbacks.length,
-    pronunciation: result.feedbacks.reduce((sum: number, f: { pronunciation: number }) => sum + f.pronunciation, 0) / result.feedbacks.length,
+    fluency: Math.round(result.feedbacks.reduce((sum: number, f: { fluency: number }) => sum + f.fluency, 0) / result.feedbacks.length),
+    coherence: Math.round(result.feedbacks.reduce((sum: number, f: { coherence: number }) => sum + f.coherence, 0) / result.feedbacks.length),
+    lexicalResource: Math.round(result.feedbacks.reduce((sum: number, f: { lexicalResource: number }) => sum + f.lexicalResource, 0) / result.feedbacks.length),
+    grammaticalRange: Math.round(result.feedbacks.reduce((sum: number, f: { grammaticalRange: number }) => sum + f.grammaticalRange, 0) / result.feedbacks.length),
+    pronunciation: Math.round(result.feedbacks.reduce((sum: number, f: { pronunciation: number }) => sum + f.pronunciation, 0) / result.feedbacks.length),
   } : {
     fluency: 0,
     coherence: 0,
@@ -113,6 +114,8 @@ export default function ResultsPage() {
       toast.success("Results are ready!");
     } else if (result?.status === 'FAILED') {
       toast.error("Failed to process your speaking test");
+    } else if (result?.status === 'TOO_SHORT') {
+      toast.error("Your recording was too short");
     }
   }, [result?.status]);
 
@@ -149,6 +152,66 @@ export default function ResultsPage() {
     )
   }
 
+  if (result.status === 'TOO_SHORT') {
+    return (
+      <div className="container py-10 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-medium">Recording Too Short</h2>
+          <p className="text-muted-foreground">Your recording was too short to be analyzed. Please try again with a longer response.</p>
+          <div className="pt-4">
+            <Link to={`/ielts/speaking/topic/${result?.topic?.id}`}>
+            <Button 
+              variant="outline"
+              className="text-amber-600 border-amber-200 hover:bg-amber-50"
+            >
+              Try Again
+            </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (result.status === 'FAILED') {
+    return (
+      <div className="container py-10 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-medium">Processing Failed</h2>
+          <p className="text-muted-foreground">We couldn't process your recording. This might be due to technical issues or poor audio quality.</p>
+          <div className="pt-4 space-x-4">
+            {/* <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/ielts/speaking'}
+              className="text-red-600 border-red-200 hover:bg-red-50"
+            >
+              Try Again
+            </Button> */}
+            <a href="https://t.me/trivonce">
+            <Button 
+              variant="outline"
+              className="text-gray-600 border-gray-200 hover:bg-gray-50"
+            >
+              Contact Support
+            </Button>
+            </a>
+
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container space-y-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -162,23 +225,17 @@ export default function ResultsPage() {
         </div>
       </motion.div>
 
-      <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="detailed">Detailed Feedback</TabsTrigger>
-        </TabsList>
 
-        <TabsContent value="overview" className="space-y-6 mt-6">
           <div className="grid gap-6 md:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <OverallScoreCard score={overallScore} />
+              <OverallScoreCard score={result?.bandScore || 0} />
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -192,10 +249,44 @@ export default function ResultsPage() {
                   <ScoreChart scores={averageScores} />
                 </CardContent>
               </Card>
-            </motion.div>
+            </motion.div> */}
           </div>
 
-          <motion.div
+          <Accordion type="single" collapsible className="w-full bg-white rounded-md">
+            {result?.feedbacks?.length ? result.feedbacks.map((feedback: {
+              questionId: string;
+              questionText: string;
+              bandScore: number;
+              fluency: number;
+              coherence: number;
+              lexicalResource: number;
+              grammaticalRange: number;
+              pronunciation: number;
+              comment: string;
+              suggestions: string;
+              transcript: string;
+            }, index: number) => (
+              <AccordionItem className="px-4" key={index} value={`item-${index}`}>
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <span>Question {index + 1}</span>
+                    <Badge variant="outline" className="ml-2">
+                      {feedback.bandScore}/9
+                    </Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <QuestionFeedback feedback={feedback} />
+                </AccordionContent>
+              </AccordionItem>
+            )) : (
+              <div className="text-center py-4 text-muted-foreground">
+                No feedback available
+              </div>
+            )}
+          </Accordion>
+
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -231,45 +322,7 @@ export default function ResultsPage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-        </TabsContent>
-
-        <TabsContent value="detailed" className="space-y-4 mt-6 bg-white px-3 rounded-md">
-          <Accordion type="single" collapsible className="w-full">
-            {result?.feedbacks?.length ? result.feedbacks.map((feedback: {
-              questionId: string;
-              questionText: string;
-              bandScore: number;
-              fluency: number;
-              coherence: number;
-              lexicalResource: number;
-              grammaticalRange: number;
-              pronunciation: number;
-              comment: string;
-              suggestions: string;
-              transcript: string;
-            }, index: number) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <span>Question {index + 1}</span>
-                    <Badge variant="outline" className="ml-2">
-                      {feedback.bandScore}/9
-                    </Badge>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <QuestionFeedback feedback={feedback} />
-                </AccordionContent>
-              </AccordionItem>
-            )) : (
-              <div className="text-center py-4 text-muted-foreground">
-                No feedback available
-              </div>
-            )}
-          </Accordion>
-        </TabsContent>
-      </Tabs>
+          </motion.div> */}
     </div>
   )
 }

@@ -10,17 +10,20 @@ import {
 } from './api';
 import { SpeakingTopic, SpeakingAudio } from './types';
 
+export type SpeakingResultStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'TOO_SHORT';
+
 export interface SpeakingResult {
   id: string;
-  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  status: SpeakingResultStatus;
   bandScore: number | null;
   createdAt: string;
   topicTitle: string;
   audioUrl: string;
   topic: {
+    id: string;
     title: string;
   };
-  feedbacks: Array<{
+  feedbacks: {
     questionId: string;
     questionText: string;
     bandScore: number;
@@ -32,7 +35,7 @@ export interface SpeakingResult {
     comment: string;
     suggestions: string;
     transcript: string;
-  }>;
+  }[];
 }
 
 export const useSpeakingTopics = () => {
