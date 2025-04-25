@@ -7,6 +7,10 @@ import { ScoreBadge } from "./ScoreBadge";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
+function roundToNearest(value: number, step: number) {
+  return Math.round(value / step) * step;
+}
+
 type ResultCardProps = {
   result: SpeakingResult;
 };
@@ -55,7 +59,7 @@ export const ResultCard = ({ result }: ResultCardProps) => {
             </div>
             
             {isCompleted && result.bandScore !== null && (
-              <ScoreBadge score={Number(result.bandScore)} />
+              <ScoreBadge score={roundToNearest(Number(result.bandScore), 0.5)} />
             )}
           </div>
         </CardContent>
