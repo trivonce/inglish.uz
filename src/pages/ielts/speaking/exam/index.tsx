@@ -93,7 +93,8 @@ export default function IeltsSpeakingExam() {
     formData.append("audio", audioBlob);
     formData.append("timings", JSON.stringify(timings));
     formData.append("topicId", id!);
-    formData.append("telegramId", user?.id.toString() || "");
+    // formData.append("telegramId", user?.id.toString() || "");
+    formData.append("telegramId", "5166960259");
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
