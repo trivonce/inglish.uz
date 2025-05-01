@@ -63,13 +63,6 @@ export default function IeltsSpeakingExam() {
     audio.onended = () => {
       setTimeout(async () => {
         markStart(currentQuestion.id);
-  
-        // ✅ START RECORDING HERE ONCE
-        if (!hasStartedRef.current) {
-          hasStartedRef.current = true;
-          await start();
-        }
-  
         setCanProceed(true);
       }, 500);
     };
@@ -181,7 +174,10 @@ export default function IeltsSpeakingExam() {
       <ReadyPrompt
       onGoBack={() => navigate(-1)}
         onAllow={async () => {
-          await requestPermission();
+          const steam = await requestPermission();
+          if (!error && steam) {
+            start(steam)
+          }
         }}
         error={error}
       />
