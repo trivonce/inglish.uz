@@ -53,29 +53,43 @@ export default function IeltsSpeakingExam() {
   //   }
   // }, [isStarted, currentQuestion]);
 
-  useEffect(() => {
-    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
+useEffect(() => {
+  if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
+
+  const audio = new Audio(currentQuestion.audios[0].audioUrl);
+  audio.volume = 1.0;
+
+  const playPromise = audio.play();
+
+  playPromise
+    ?.then(() => {
+      console.log("🔊 Playing audio:", currentQuestion.audios[0].audioUrl);
+    })
+    .catch((err) => {
+      console.error("❌ Failed to play audio", err);
+    });
+
+  audio.onended = () => {
+    setTimeout(async () => {
+      markStart(currentQuestion.id);
+
+      // ✅ Start recording only once, after first question audio
+      if (!hasStartedRef.current) {
+        hasStartedRef.current = true;
+        await start();
+      }
+
+      setCanProceed(true);
+    }, 500);
+  };
+
+  return () => {
+    audio.pause();
+    audio.currentTime = 0;
+  };
+}, [currentQuestion?.audios, isStarted]);
+
   
-    const audioContext = new AudioContext();
-    const audioElement = new Audio(currentQuestion.audios[0].audioUrl);
-    const track = audioContext.createMediaElementSource(audioElement);
-    track.connect(audioContext.destination);
-  
-    audioElement.play().catch(console.error);
-  
-    audioElement.onended = () => {
-      setTimeout(() => {
-        markStart(currentQuestion.id);
-        // start();
-        setCanProceed(true);
-      }, 500);
-    };
-  
-    return () => {
-      audioElement.pause();
-      audioElement.currentTime = 0;
-    };
-  }, [currentQuestion?.audios, isStarted]);
 
   
   const handleSubmitResults = () => {
@@ -180,9 +194,6 @@ export default function IeltsSpeakingExam() {
       onGoBack={() => navigate(-1)}
         onAllow={async () => {
           await requestPermission();
-          if (!error) {
-            await start();
-          }
         }}
         error={error}
       />
