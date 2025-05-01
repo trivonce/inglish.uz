@@ -17,23 +17,26 @@ export function usePersistentRecorder() {
   const allChunks = useRef<Blob[]>([]);
 
   const start = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    streamRef.current = stream;
-
-    const recorder = new MediaRecorder(stream);
+    if (mediaRecorderRef.current && isRecording) return;
+  
+    if (!streamRef.current) {
+      streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+  
+    const recorder = new MediaRecorder(streamRef.current);
     mediaRecorderRef.current = recorder;
     allChunks.current = [];
-
+  
     recorder.ondataavailable = (e) => {
       allChunks.current.push(e.data);
     };
-
+  
     recorder.onstop = () => {
       const fullBlob = new Blob(allChunks.current, { type: "audio/webm" });
       setAudioBlob(fullBlob);
     };
-
-    recorder.start(); // no interval needed
+  
+    recorder.start();
     setIsRecording(true);
     startOffset.current = performance.now();
   };
