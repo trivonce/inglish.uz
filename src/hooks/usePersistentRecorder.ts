@@ -17,7 +17,7 @@ export function usePersistentRecorder() {
   const allChunks = useRef<Blob[]>([]);
 
   const start = async () => {
-    if (isRecording || mediaRecorderRef.current || streamRef.current) {
+    if (isRecording || mediaRecorderRef.current?.state === "recording") {
       console.log("⚠️ Already recording or stream exists, skipping re-request");
       return;
     }
