@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSpeakingTopic } from "@/features/speaking/hooks";
 import { usePersistentRecorder } from "@/hooks/usePersistentRecorder";
@@ -19,6 +19,9 @@ export default function IeltsSpeakingExam() {
   const { data: topic } = useSpeakingTopic(id!);
   const submitMutation = useSubmitSpeakingAnswers();
   const { user} = useTelegramStore()
+
+  const hasStartedRef = useRef(false);
+
   const navigate = useNavigate()
 
   const [currentPart, setCurrentPart] = useState<1 | 2 | 3>(1);
@@ -44,36 +47,33 @@ export default function IeltsSpeakingExam() {
   );
 
   useEffect(() => {
-    if (isStarted && currentQuestion && !isRecording) {
+    if (isStarted && currentQuestion && !isRecording && !hasStartedRef.current) {
+      hasStartedRef.current = true;
       start();
     }
   }, [isStarted, currentQuestion]);
 
   useEffect(() => {
-    console.log('Current question:', currentQuestion);
-    console.log('Audio URL:', currentQuestion?.audios?.[0]?.audioUrl);
-    
-    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) {
-      console.log('Skipping audio playback - missing URL or not started');
-      return;
-    }
-
-    const audio = new Audio(currentQuestion.audios[0].audioUrl);
-    console.log('Created audio element');
-    
-    audio.play().catch(error => {
-      console.error('Error playing audio:', error);
-    });
-
-    audio.onended = () => {
-      console.log('Audio ended');
-      markStart(currentQuestion.id);
-      setTimeout(() => setCanProceed(true), 4000);
+    if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
+  
+    const audioContext = new AudioContext();
+    const audioElement = new Audio(currentQuestion.audios[0].audioUrl);
+    const track = audioContext.createMediaElementSource(audioElement);
+    track.connect(audioContext.destination);
+  
+    audioElement.play().catch(console.error);
+  
+    audioElement.onended = () => {
+      setTimeout(() => {
+        markStart(currentQuestion.id);
+        start();
+        setCanProceed(true);
+      }, 500);
     };
-
+  
     return () => {
-      audio.pause();
-      audio.currentTime = 0;
+      audioElement.pause();
+      audioElement.currentTime = 0;
     };
   }, [currentQuestion?.audios, isStarted]);
 
@@ -93,8 +93,8 @@ export default function IeltsSpeakingExam() {
     formData.append("audio", audioBlob);
     formData.append("timings", JSON.stringify(timings));
     formData.append("topicId", id!);
-    formData.append("telegramId", user?.id.toString() || "");
-    // formData.append("telegramId", "5166960259");
+    // formData.append("telegramId", user?.id.toString() || "");
+    formData.append("telegramId", "5166960259");
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
