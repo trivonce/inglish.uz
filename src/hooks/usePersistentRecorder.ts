@@ -17,28 +17,34 @@ export function usePersistentRecorder() {
   const allChunks = useRef<Blob[]>([]);
 
   const start = async () => {
-    if (mediaRecorderRef.current && isRecording) return;
-  
-    if (!streamRef.current) {
-      streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (isRecording || mediaRecorderRef.current || streamRef.current) {
+      console.log("⚠️ Already recording or stream exists, skipping re-request");
+      return;
     }
   
-    const recorder = new MediaRecorder(streamRef.current);
-    mediaRecorderRef.current = recorder;
-    allChunks.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
   
-    recorder.ondataavailable = (e) => {
-      allChunks.current.push(e.data);
-    };
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      allChunks.current = [];
   
-    recorder.onstop = () => {
-      const fullBlob = new Blob(allChunks.current, { type: "audio/webm" });
-      setAudioBlob(fullBlob);
-    };
+      recorder.ondataavailable = (e) => {
+        allChunks.current.push(e.data);
+      };
   
-    recorder.start();
-    setIsRecording(true);
-    startOffset.current = performance.now();
+      recorder.onstop = () => {
+        const fullBlob = new Blob(allChunks.current, { type: "audio/webm" });
+        setAudioBlob(fullBlob);
+      };
+  
+      recorder.start();
+      setIsRecording(true);
+      startOffset.current = performance.now();
+    } catch (err) {
+      console.error("❌ Mic access failed:", err);
+    }
   };
 
   const stop = () => {

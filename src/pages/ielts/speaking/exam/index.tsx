@@ -46,13 +46,6 @@ export default function IeltsSpeakingExam() {
     q => q.partNumber === currentPart && q.order === currentIndex + 1
   );
 
-  // useEffect(() => {
-  //   if (isStarted && currentQuestion && !isRecording && !hasStartedRef.current) {
-  //     hasStartedRef.current = true;
-  //     start();
-  //   }
-  // }, [isStarted, currentQuestion]);
-
 useEffect(() => {
   if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
 
@@ -72,12 +65,6 @@ useEffect(() => {
   audio.onended = () => {
     setTimeout(async () => {
       markStart(currentQuestion.id);
-
-      // ✅ Start recording only once, after first question audio
-      if (!hasStartedRef.current) {
-        hasStartedRef.current = true;
-        await start();
-      }
 
       setCanProceed(true);
     }, 500);
@@ -194,6 +181,9 @@ useEffect(() => {
       onGoBack={() => navigate(-1)}
         onAllow={async () => {
           await requestPermission();
+          if (!error) {
+            start()
+          }
         }}
         error={error}
       />
