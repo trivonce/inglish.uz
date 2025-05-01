@@ -46,12 +46,12 @@ export default function IeltsSpeakingExam() {
     q => q.partNumber === currentPart && q.order === currentIndex + 1
   );
 
-  useEffect(() => {
-    if (isStarted && currentQuestion && !isRecording && !hasStartedRef.current) {
-      hasStartedRef.current = true;
-      start();
-    }
-  }, [isStarted, currentQuestion]);
+  // useEffect(() => {
+  //   if (isStarted && currentQuestion && !isRecording && !hasStartedRef.current) {
+  //     hasStartedRef.current = true;
+  //     start();
+  //   }
+  // }, [isStarted, currentQuestion]);
 
   useEffect(() => {
     if (!currentQuestion?.audios?.[0]?.audioUrl || !isStarted) return;
@@ -66,7 +66,7 @@ export default function IeltsSpeakingExam() {
     audioElement.onended = () => {
       setTimeout(() => {
         markStart(currentQuestion.id);
-        start();
+        // start();
         setCanProceed(true);
       }, 500);
     };
@@ -93,8 +93,8 @@ export default function IeltsSpeakingExam() {
     formData.append("audio", audioBlob);
     formData.append("timings", JSON.stringify(timings));
     formData.append("topicId", id!);
-    // formData.append("telegramId", user?.id.toString() || "");
-    formData.append("telegramId", "5166960259");
+    formData.append("telegramId", user?.id.toString() || "");
+    // formData.append("telegramId", "5166960259");
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
