@@ -13,6 +13,7 @@ import QuestionContent from "./components/QuestionContent";
 import BottomControls from "./components/BottomControls";
 import SubmitLoadingScreen from "./components/SubmitLoadingScreen";
 import { useTelegramStore } from "@/store/useTelegramStore";
+import { getSupportedAudioMimeType } from "@/lib/media";
 
 export default function IeltsSpeakingExam() {
   const { id } = useParams<{ id: string }>();
@@ -74,22 +75,27 @@ export default function IeltsSpeakingExam() {
   }, [currentQuestion?.audios, isStarted]);
   
   const handleSubmitResults = () => {
-    console.log('sending')
-    console.log(audioBlob, timings)
     if (!audioBlob || timings.length === 0) {
       console.warn("Audio or timings not ready");
-
-      return
+      return;
     }
   
     setIsSubmitting(true);
   
+    const mimeType = getSupportedAudioMimeType();
+    const extension = mimeType.includes('webm')
+      ? 'webm'
+      : mimeType.includes('mp4')
+      ? 'm4a'
+      : 'mp3';
+  
+    const file = new File([audioBlob], `audio-${Date.now()}.${extension}`, { type: mimeType });
+  
     const formData = new FormData();
-    formData.append("audio", audioBlob);
+    formData.append("audio", file);
     formData.append("timings", JSON.stringify(timings));
     formData.append("topicId", id!);
     formData.append("telegramId", user?.id.toString() || "");
-    // formData.append("telegramId", "5166960259");
   
     submitMutation.mutate(formData, {
       onSuccess: (data) => {
@@ -102,6 +108,7 @@ export default function IeltsSpeakingExam() {
       },
     });
   };
+  
   
   useEffect(() => {
     if (isFinished && audioBlob && timings.length > 0 && !isSubmitting) {

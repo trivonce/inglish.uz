@@ -1,3 +1,4 @@
+import { getSupportedAudioMimeType } from "@/lib/media";
 import { useState, useRef } from "react";
 
 export interface QuestionTiming {
@@ -33,7 +34,8 @@ export function usePersistentRecorder() {
   
     allChunks.current = [];
   
-    const recorder = new MediaRecorder(streamRef.current);
+    const mimeType = getSupportedAudioMimeType();
+    const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : {});
     mediaRecorderRef.current = recorder;
   
     recorder.ondataavailable = (e) => {
@@ -41,9 +43,9 @@ export function usePersistentRecorder() {
     };
   
     recorder.onstop = () => {
-      const fullBlob = new Blob(allChunks.current, { type: "audio/webm" });
+      const fullBlob = new Blob(allChunks.current, { type: mimeType || 'audio/webm' });
       setAudioBlob(fullBlob);
-    };
+    };    
   
     recorder.start();
     setIsRecording(true);
